@@ -13,12 +13,23 @@ class Product {
   String imgURL;
   @HiveField(4)
   String availability;
+  @HiveField(5)
+  String productID;
+  @HiveField(6)
+  String normalExpedition;
+  @HiveField(7)
+  String fastExpedition;
+  @HiveField(8)
+  String expeditionUntil;
 
-  Product({
-    required this.imgURL,
-    required this.productName,
-    required this.productCostEuros,
-    required this.productCostCents,
-    required this.availability,
-  });
+  Product(
+      {required this.imgURL,
+      required this.productName,
+      required this.productCostEuros,
+      required this.productCostCents,
+      required this.availability,
+      required this.productID,
+      required this.normalExpedition,
+      required this.fastExpedition,
+      required this.expeditionUntil});
 }

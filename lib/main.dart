@@ -1,4 +1,5 @@
 import 'package:bot_cazzeggio/pages/homepage.dart';
+import 'package:bot_cazzeggio/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -6,7 +7,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('products');
-  print(Hive.box('products').isOpen);
   runApp(const MyApp());
 }
 
@@ -17,10 +17,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CazzeggioBot',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
       home: const Homepage(),
     );
   }
