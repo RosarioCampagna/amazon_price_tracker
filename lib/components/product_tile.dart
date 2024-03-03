@@ -30,14 +30,16 @@ class ProductTile extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           dense: true,
           visualDensity: const VisualDensity(vertical: 4),
-          tileColor: Colors.grey.shade500,
+          tileColor: Theme.of(context).colorScheme.secondary,
           leading: ClipRRect(child: Image.network(product.imgURL)),
           title: Text(product.productName,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               maxLines: 3,
               overflow: TextOverflow.ellipsis),
           subtitle: Text(
-              '${product.productCostEuros},${product.productCostCents}€ ${product.normalExpedition}, Oppure ${product.expeditionUntil} con prime per riceverlo ${product.fastExpedition}',
+              product.fastExpedition != 'null'
+                  ? '${product.productCostEuros},${product.productCostCents}€ Spedizione ${product.normalExpedition}, Oppure ${product.expeditionUntil} con prime per riceverlo ${product.fastExpedition}'
+                  : '${product.productCostEuros},${product.productCostCents}€ Spedizione ${product.normalExpedition}',
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),

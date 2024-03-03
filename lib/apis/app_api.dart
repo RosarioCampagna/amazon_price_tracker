@@ -57,25 +57,26 @@ class AppAPI {
       //data di spedizione senza prime
       String normalExpedition =
           soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE').toString();
-      normalExpedition = normalExpedition.replaceAll(
-          '<div class="a-spacing-base" id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE"><span data-csa-c-type="element" data-csa-c-content-id="DEXUnifiedCXPDM" data-csa-c-delivery-price="GRATUITA" data-csa-c-value-proposition="" data-csa-c-delivery-type="Consegna" data-csa-c-delivery-time="martedì, 5 marzo" data-csa-c-delivery-destination="" data-csa-c-delivery-condition="" data-csa-c-pickup-location="" data-csa-c-distance="" data-csa-c-delivery-cutoff="" data-csa-c-mir-view="CONSOLIDATED_CX" data-csa-c-mir-type="DELIVERY" data-csa-c-mir-sub-type="" data-csa-c-mir-variant="DEFAULT" data-csa-c-delivery-benefit-program-id="cfs"> <a class="a-link-normal" target="_blank" rel="noopener" href="/gp/help/customer/display.html?nodeId=200534000">Consegna GRATUITA</a> <span class="a-text-bold">',
-          '');
-      normalExpedition = normalExpedition.replaceAll(
-          '</span>. <a class="a-link-normal" target="_blank" rel="noopener" href="/gp/help/customer/display.html/?nodeId=200534000">Maggiori informazioni</a> </span></div>',
-          '');
+
+      normalExpedition = normalExpedition.substring(normalExpedition.indexOf('<span class="a-text-bold">') + 26,
+          normalExpedition.indexOf('</span> </span></div>'));
 
       //data di spedizione con prime
       String fastExpedition =
           soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
-
-      fastExpedition = fastExpedition.substring(fastExpedition.indexOf('data-csa-c-delivery-time="') + 26,
-          fastExpedition.indexOf('" data-csa-c-delivery-destination=""'));
+      if (fastExpedition != 'null') {
+        fastExpedition = fastExpedition.substring(fastExpedition.indexOf('data-csa-c-delivery-time="') + 26,
+            fastExpedition.indexOf('" data-csa-c-delivery-destination=""'));
+      }
 
       //ordina entro
       String expeditionUntil =
           soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
-      expeditionUntil = expeditionUntil.substring(expeditionUntil.indexOf('data-csa-c-delivery-cutoff="') + 28,
-          expeditionUntil.indexOf('" data-csa-c-mir-view='));
+
+      if (expeditionUntil != 'null') {
+        expeditionUntil = expeditionUntil.substring(expeditionUntil.indexOf('data-csa-c-delivery-cutoff="') + 28,
+            expeditionUntil.indexOf('" data-csa-c-mir-view='));
+      }
 
       Product product = Product(
           imgURL: imgURL,

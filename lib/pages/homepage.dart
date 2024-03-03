@@ -11,7 +11,7 @@ class Homepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade800,
+      backgroundColor: Theme.of(context).colorScheme.background,
 
       //tasto per aggiungere nuovi prodotti
       floatingActionButton: FloatingActionButton(
@@ -62,7 +62,10 @@ class Homepage extends StatelessWidget {
                     Product product = productList[index];
 
                     //in uscita product tile
-                    return ProductTile(product: product, box: box);
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ProductTile(product: product, box: box),
+                    );
                   });
             },
           )),

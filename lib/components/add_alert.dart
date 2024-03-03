@@ -33,6 +33,7 @@ class AddAlert extends StatelessWidget {
               if (!Hive.box('products').containsKey(text)) {
                 Hive.box('products').put(text, text);
                 text = '';
+                Navigator.pop(context);
               } else {
                 showDialog(
                     context: context,
