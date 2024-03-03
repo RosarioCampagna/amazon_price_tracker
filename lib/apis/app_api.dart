@@ -52,7 +52,6 @@ class AppAPI {
       availability = availability.replaceAll('<span class="a-size-medium a-color-success"> ', '');
       availability = availability.replaceAll(' </span>', '');
     }
-    print(availability);
     //cerca l'immagine del prodotto in questione
     String imgURL = soup.find('img', class_: 'a-dynamic-image').toString();
     imgURL = imgURL.substring(imgURL.indexOf('http'), imgURL.indexOf('.jpg') + 4);
