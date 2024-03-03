@@ -32,30 +32,32 @@ class Homepage extends StatelessWidget {
         builder: (context, box, widget) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
           child: Center(
-              child: ListView.builder(
-                  itemCount: box.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: FutureBuilder(
-                          future: AppAPI().getProduct(box.getAt(index)),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
-                            if (snapshot.hasError) {
-                              return Row(children: [
-                                Text(snapshot.error.toString()),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () => Hive.box('products').deleteAt(index),
-                                )
-                              ]);
-                            }
-                            return ProductTile(product: snapshot.data!, box: box);
-                          }),
-                    );
-                  })),
+              child: box.isEmpty
+                  ? const Center(child: Text('Aggiungi un prodotto per monitorarne il prezzo'))
+                  : ListView.builder(
+                      itemCount: box.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: FutureBuilder(
+                              future: AppAPI().getProduct(box.getAt(index)),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+                                if (snapshot.hasError) {
+                                  return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                    Text(snapshot.error.toString()),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () => Hive.box('products').deleteAt(index),
+                                    )
+                                  ]);
+                                }
+                                return ProductTile(product: snapshot.data!, box: box);
+                              }),
+                        );
+                      })),
         ),
       ),
     );
