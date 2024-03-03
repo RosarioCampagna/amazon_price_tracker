@@ -1,7 +1,6 @@
-import 'package:bot_cazzeggio/apis/app_api.dart';
-import 'package:bot_cazzeggio/components/add_alert.dart';
-import 'package:bot_cazzeggio/components/product_tile.dart';
-import 'package:bot_cazzeggio/models/product.dart';
+import 'package:amazon_price_tracker/apis/app_api.dart';
+import 'package:amazon_price_tracker/components/add_alert.dart';
+import 'package:amazon_price_tracker/components/product_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -33,42 +32,30 @@ class Homepage extends StatelessWidget {
         builder: (context, box, widget) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
           child: Center(
-              child: FutureBuilder(
-            future: AppAPI().getProductList(box),
-            builder: (context, snapshot) {
-              //se il future è in caricamento mostra progresso circolare
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              //se ha un errore mostra l'errore
-              if (snapshot.hasError) {
-                return Center(child: Text(snapshot.error.toString()));
-              }
-
-              //ottieni la lista di prodotti
-              List<Product> productList = snapshot.data!;
-
-              //se la lista è vuota mostra questo
-              if (productList.isEmpty) {
-                return const Center(child: Text('Nessun elemento aggiunto alla lista'));
-              }
-
-              //se no mostra la lista
-              return ListView.builder(
-                  itemCount: productList.length,
+              child: ListView.builder(
+                  itemCount: box.length,
                   itemBuilder: (context, index) {
-                    //singolo prodotto ottenuto dalla lista
-                    Product product = productList[index];
-
-                    //in uscita product tile
                     return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ProductTile(product: product, box: box),
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: FutureBuilder(
+                          future: AppAPI().getProduct(box.getAt(index)),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            if (snapshot.hasError) {
+                              return Row(children: [
+                                Text(snapshot.error.toString()),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () => Hive.box('products').deleteAt(index),
+                                )
+                              ]);
+                            }
+                            return ProductTile(product: snapshot.data!, box: box);
+                          }),
                     );
-                  });
-            },
-          )),
+                  })),
         ),
       ),
     );

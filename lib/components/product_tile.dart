@@ -1,4 +1,4 @@
-import 'package:bot_cazzeggio/models/product.dart';
+import 'package:amazon_price_tracker/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
@@ -49,24 +49,35 @@ class ProductTile extends StatelessWidget {
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             trailing: product.availability == 'Disponibilità immediata'
                 ? Icon(Icons.check_circle_rounded, color: Colors.green.shade700)
-                : product.availability == 'null'
+                : product.availability == 'Non disponibile.'
                     ? Container(
                         padding: const EdgeInsets.all(1),
                         decoration: BoxDecoration(color: Colors.red.shade700, shape: BoxShape.circle),
                         child: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.secondary, size: 18))
-                    : int.parse(product.availability) >= 5
+                    : product.availability == '' || product.availability == 'null'
                         ? Container(
-                            padding: const EdgeInsets.all(5.5),
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.yellow.shade700),
-                            child: Text(
-                              product.availability,
-                              style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.secondary),
-                              textAlign: TextAlign.center,
-                            ))
-                        : Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.orange.shade700),
-                            child: Text(product.availability))),
+                            padding: const EdgeInsets.all(1),
+                            decoration:
+                                BoxDecoration(color: Theme.of(context).colorScheme.tertiary, shape: BoxShape.circle),
+                            child: Icon(Icons.question_mark_rounded,
+                                color: Theme.of(context).colorScheme.secondary, size: 18))
+                        : int.parse(product.availability) >= 5
+                            ? Container(
+                                width: 30,
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.yellow.shade700),
+                                child: Text(
+                                  product.availability,
+                                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                                  textAlign: TextAlign.center,
+                                ))
+                            : Container(
+                                width: 30,
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.orange.shade700),
+                                child: Text(
+                                  product.availability,
+                                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                                  textAlign: TextAlign.center,
+                                ))),
       ),
     );
   }

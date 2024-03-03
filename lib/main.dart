@@ -1,5 +1,5 @@
-import 'package:bot_cazzeggio/pages/homepage.dart';
-import 'package:bot_cazzeggio/themes/themes.dart';
+import 'package:amazon_price_tracker/pages/homepage.dart';
+import 'package:amazon_price_tracker/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CazzeggioBot',
+      title: 'Amazon Price Tracker',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
