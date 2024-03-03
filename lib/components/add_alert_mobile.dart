@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class AddAlertNorm extends StatelessWidget {
-  const AddAlertNorm({super.key});
+class AddAlertMobile extends StatelessWidget {
+  const AddAlertMobile({super.key});
   static String text = '';
 
   @override
@@ -30,14 +30,7 @@ class AddAlertNorm extends StatelessWidget {
           onPressed: () {
             if (text.isNotEmpty) {
               String tempText = text;
-              try {
-                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('/'));
-              } on Error {
-                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('dp') + 13);
-              }
-              if (tempText.length > 10) {
-                tempText = text.substring(text.indexOf('product') + 8, text.indexOf('product') + 18);
-              }
+              tempText = text.substring(text.lastIndexOf('/') + 1);
               if (!Hive.box('products').containsKey(tempText)) {
                 Hive.box('products').put(tempText, tempText);
                 tempText = '';

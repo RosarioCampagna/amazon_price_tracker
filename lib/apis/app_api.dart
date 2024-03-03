@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:amazon_price_tracker/models/product.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -8,9 +10,14 @@ class AppAPI {
     Hive.box('products').put(text, text);
   }
 
-  Future<Product> getProduct(productID) async {
+  Future<Product> getProductWeb(productID) async {
+    Uri url;
     //prendo in input il sito con il prodotto
-    Uri url = Uri.https('amazon.it', '/gp/product/$productID');
+    if (Platform.isAndroid) {
+      url = Uri.https('amzn.eu', '/d/$productID');
+    } else {
+      url = Uri.https('amazon.it', '/gp/product/$productID');
+    }
 
     //costruisco l'header
     Map<String, String> headers = {
