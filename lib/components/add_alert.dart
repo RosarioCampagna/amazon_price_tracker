@@ -29,9 +29,18 @@ class AddAlert extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             if (text.isNotEmpty) {
-              text = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('/'));
-              if (!Hive.box('products').containsKey(text)) {
-                Hive.box('products').put(text, text);
+              String tempText = text;
+              try {
+                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('/'));
+              } on Error {
+                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('dp') + 13);
+              }
+              if (tempText.length > 10) {
+                tempText = text.substring(text.indexOf('product') + 8, text.indexOf('product') + 18);
+              }
+              if (!Hive.box('products').containsKey(tempText)) {
+                Hive.box('products').put(tempText, tempText);
+                tempText = '';
                 text = '';
                 Navigator.pop(context);
               } else {

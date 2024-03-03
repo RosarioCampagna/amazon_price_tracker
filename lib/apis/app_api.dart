@@ -34,7 +34,6 @@ class AppAPI {
       productName =
           productName.replaceAll('<span id="productTitle" class="a-size-large product-title-word-break">        ', '');
       productName = productName.replaceAll('       </span>', '');
-
       //cerca il costo del prodotto parte intera tramite soup e spezzettalo fino ad averne solo il nome
       String productCostEuros = soup.find('*', class_: 'a-price-whole').toString();
       productCostEuros = productCostEuros.replaceAll('<span class="a-price-whole">', '');
@@ -47,35 +46,60 @@ class AppAPI {
 
       //cerca la disponibilità del prodotto tramite soup e spezzettalo fino ad averne solo il nome
       String availability = soup.find('*', class_: 'a-size-medium a-color-success').toString();
-      availability = availability.replaceAll('<span class="a-size-medium a-color-success"> ', '');
-      availability = availability.replaceAll(' </span>', '');
+
+      if (availability == 'null') {
+        availability = soup.find('*', class_: 'a-size-base a-color-price a-text-bold').toString();
+
+        availability =
+            availability.replaceAll('<span class="a-size-base a-color-price a-text-bold"> Disponibilità: solo ', '');
+        availability = availability.replaceAll(' </span>', '');
+      } else {
+        availability = availability.replaceAll('<span class="a-size-medium a-color-success"> ', '');
+        availability = availability.replaceAll(' </span>', '');
+      }
 
       //cerca l'immagine del prodotto in questione
       String imgURL = soup.find('img', class_: 'a-dynamic-image').toString();
-      imgURL = imgURL.substring(imgURL.indexOf('src="') + 5, imgURL.indexOf('" data-old'));
+      imgURL = imgURL.substring(imgURL.indexOf('http'), imgURL.indexOf('.jpg') + 4);
 
-      //data di spedizione senza prime
-      String normalExpedition =
-          soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE').toString();
+      String normalExpedition;
+      String fastExpedition;
+      String expeditionUntil;
 
-      normalExpedition = normalExpedition.substring(normalExpedition.indexOf('<span class="a-text-bold">') + 26,
-          normalExpedition.indexOf('</span> </span></div>'));
+      if (availability == '' || availability == 'Non disponibile.') {
+        normalExpedition = 'null';
+        fastExpedition = 'null';
+        expeditionUntil = 'null';
+        availability = 'null';
+      } else {
+        //data di spedizione senza prime
+        normalExpedition =
+            soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE').toString();
 
-      //data di spedizione con prime
-      String fastExpedition =
-          soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
-      if (fastExpedition != 'null') {
-        fastExpedition = fastExpedition.substring(fastExpedition.indexOf('data-csa-c-delivery-time="') + 26,
-            fastExpedition.indexOf('" data-csa-c-delivery-destination=""'));
-      }
+        try {
+          normalExpedition = normalExpedition.substring(normalExpedition.indexOf('<span class="a-text-bold">') + 26,
+              normalExpedition.indexOf('</span> </span></div>'));
+        } on Error {
+          normalExpedition = normalExpedition.substring(normalExpedition.indexOf('<span class="a-text-bold">') + 26,
+              normalExpedition.indexOf('</span> sul tuo primo ordine'));
+        }
 
-      //ordina entro
-      String expeditionUntil =
-          soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
+        //data di spedizione con prime
+        fastExpedition =
+            soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
+        if (fastExpedition != 'null') {
+          fastExpedition = fastExpedition.substring(fastExpedition.indexOf('data-csa-c-delivery-time="') + 26,
+              fastExpedition.indexOf('" data-csa-c-delivery-destination=""'));
+        }
 
-      if (expeditionUntil != 'null') {
-        expeditionUntil = expeditionUntil.substring(expeditionUntil.indexOf('data-csa-c-delivery-cutoff="') + 28,
-            expeditionUntil.indexOf('" data-csa-c-mir-view='));
+        //ordina entro
+        expeditionUntil =
+            soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
+        if (expeditionUntil != 'null') {
+          expeditionUntil = expeditionUntil.substring(expeditionUntil.indexOf('data-csa-c-delivery-cutoff="') + 28,
+              expeditionUntil.indexOf('" data-csa-c-mir-view='));
+        }
+        print(expeditionUntil);
       }
 
       Product product = Product(
