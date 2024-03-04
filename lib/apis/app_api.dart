@@ -12,6 +12,7 @@ class AppAPI {
 
   Future<Product> getProductWeb(productID) async {
     Uri url;
+
     //prendo in input il sito con il prodotto
     if (Platform.isAndroid) {
       url = Uri.https('amzn.eu', '/d/$productID');
@@ -52,9 +53,8 @@ class AppAPI {
     String availability = soup.find('*', class_: 'a-size-medium a-color-success').toString();
     if (availability == 'null') {
       availability = soup.find('*', class_: 'a-size-base a-color-price a-text-bold').toString();
-      availability =
-          availability.replaceAll('<span class="a-size-base a-color-price a-text-bold"> Disponibilità: solo ', '');
-      availability = availability.replaceAll(' </span>', '');
+      availability = availability.substring(availability.indexOf('solo') + 5, availability.indexOf('solo') + 7);
+      availability = availability.trim();
     } else {
       availability = availability.replaceAll('<span class="a-size-medium a-color-success"> ', '');
       availability = availability.replaceAll(' </span>', '');
@@ -74,9 +74,9 @@ class AppAPI {
     } else {
       //data di spedizione senza prime
       normalExpedition = soup.find('span', class_: 'a-text-bold').toString();
-      normalExpedition = normalExpedition.replaceAll('<span class="a-text-bold">', '');
-      normalExpedition = normalExpedition.replaceAll('</span>', '');
 
+      normalExpedition = normalExpedition.substring(normalExpedition.lastIndexOf('"') + 2);
+      normalExpedition = normalExpedition.replaceAll('</span>', '');
       //data di spedizione con prime
       fastExpedition = soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
       if (fastExpedition != 'null') {
@@ -95,14 +95,14 @@ class AppAPI {
 
     Product product = Product(
         imgURL: imgURL,
-        productName: productName,
-        productCostEuros: productCostEuros,
-        productCostCents: productCostCents,
-        availability: availability,
-        productID: productID,
-        normalExpedition: normalExpedition,
-        fastExpedition: fastExpedition,
-        expeditionUntil: expeditionUntil);
+        productName: productName.trim(),
+        productCostEuros: productCostEuros.trim(),
+        productCostCents: productCostCents.trim(),
+        availability: availability.trim(),
+        productID: productID.trim(),
+        normalExpedition: normalExpedition.trim(),
+        fastExpedition: fastExpedition.trim(),
+        expeditionUntil: expeditionUntil.trim());
 
     return product;
   }

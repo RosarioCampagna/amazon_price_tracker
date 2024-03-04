@@ -7,9 +7,14 @@ import 'package:amazon_price_tracker/components/product_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,40 +36,54 @@ class Homepage extends StatelessWidget {
         },
         child: const Icon(Icons.add_rounded),
       ),
-      appBar: AppBar(title: const Text('Lista di prodotti'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Lista di prodotti'),
+        centerTitle: true,
+        actions: [
+          if (!Platform.isAndroid)
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: () => setState(() {}),
+            )
+        ],
+      ),
 
       //listener per l'aggiunta di nuovi prodotti
       body: ValueListenableBuilder(
         valueListenable: Hive.box('products').listenable(),
         builder: (context, box, widget) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Center(
               child: box.isEmpty
                   ? const Center(child: Text('Aggiungi un prodotto per monitorarne il prezzo'))
-                  : ListView.builder(
-                      itemCount: box.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: FutureBuilder(
-                              future: AppAPI().getProductWeb(box.getAt(index)),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const Center(child: CircularProgressIndicator());
-                                }
-                                if (snapshot.hasError) {
-                                  return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                    const Text('Impossibile visualizzare il prodotto'),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () => Hive.box('products').deleteAt(index),
-                                    )
-                                  ]);
-                                }
-                                return ProductTile(product: snapshot.data!, box: box);
-                              }),
-                        );
-                      })),
+                  : RefreshIndicator(
+                      onRefresh: () async => setState(() {}),
+                      child: ListView.builder(
+                          itemCount: box.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: FutureBuilder(
+                                  future: AppAPI().getProductWeb(box.getAt(index)),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
+                                    if (snapshot.hasError) {
+                                      return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                        const Expanded(
+                                            child: Text('Impossibile visualizzare il prodotto in questo momento')),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete),
+                                          onPressed: () => Hive.box('products').deleteAt(index),
+                                        )
+                                      ]);
+                                    }
+                                    return ProductTile(product: snapshot.data!, box: box);
+                                  }),
+                            );
+                          }),
+                    )),
         ),
       ),
     );
