@@ -63,7 +63,28 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
+  msix: ^3.16.7
+
+msix_config:
+  display_name: Amazon Price Tracker
+  msix_version: 1.0.0.0
+  windows_build_args: --obfuscate --split-debug-info=D:\Download\
+  publisher_name: Rosario Campagna
+  identity_name: rosariocampagna.amazonpricetracker
+  logo_path: D:\Programming\Assets\icon-512.png
+  capabilities: internetClientServer
+  certificate_path: D:\Programming\Assets\certificate.pfx
+  certificate_password: Francesco7!
+
+  app_installer:
+    publish_folder_path: D:\Download\
+    hours_between_update_checks: 0
+    automatic_background_task: true
+    update_blocks_activation: true
+    show_prompt: true
+  
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

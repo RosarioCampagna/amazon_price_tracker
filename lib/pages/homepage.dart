@@ -64,7 +64,7 @@ class _HomepageState extends State<Homepage> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: FutureBuilder(
-                                  future: AppAPI().getProductWeb(box.getAt(index)),
+                                  future: AppAPI().getProduct(box.getAt(index)),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState == ConnectionState.waiting) {
                                       return const Center(child: CircularProgressIndicator());

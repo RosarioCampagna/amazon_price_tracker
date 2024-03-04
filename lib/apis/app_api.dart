@@ -10,7 +10,7 @@ class AppAPI {
     Hive.box('products').put(text, text);
   }
 
-  Future<Product> getProductWeb(productID) async {
+  Future<Product> getProduct(productID) async {
     Uri url;
 
     //prendo in input il sito con il prodotto
