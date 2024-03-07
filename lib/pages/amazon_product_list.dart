@@ -5,8 +5,8 @@ import '../apis/app_api.dart';
 import '../components/amazon_product_tile.dart';
 import '../main.dart';
 
-class AmazonProductPAge extends StatelessWidget {
-  const AmazonProductPAge({super.key});
+class AmazonProductList extends StatelessWidget {
+  const AmazonProductList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +17,12 @@ class AmazonProductPAge extends StatelessWidget {
         builder: (context, amazonMobileBox, widget) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(children: [
-            if (amazonDesktop.isEmpty)
+            if (amazonDesktopBox.isEmpty)
               const Center(child: Text('Aggiungi un prodotto per monitorarne il prezzo'))
             else
               Expanded(
                 child: ListView.builder(
+                    shrinkWrap: true,
                     itemCount: amazonDesktop.length,
                     itemBuilder: (context, index) {
                       return Padding(
@@ -37,17 +38,18 @@ class AmazonProductPAge extends StatelessWidget {
                                   const Expanded(child: Text('Impossibile visualizzare il prodotto in questo momento')),
                                   IconButton(
                                     icon: const Icon(Icons.delete),
-                                    onPressed: () => Hive.box(amazonDesktop).deleteAt(index),
+                                    onPressed: () => amazonDesktopBox.deleteAt(index),
                                   )
                                 ]);
                               }
-                              return ProductTile(product: snapshot.data!, box: amazonDesktopBox);
+                              return AmazonProductTile(product: snapshot.data!, box: amazonDesktopBox);
                             }),
                       );
                     }),
               ),
-            if (amazonMobile.isNotEmpty)
+            if (amazonMobileBox.isNotEmpty)
               ListView.builder(
+                  shrinkWrap: true,
                   itemCount: amazonMobile.length,
                   itemBuilder: (context, index) {
                     return Padding(
@@ -63,11 +65,11 @@ class AmazonProductPAge extends StatelessWidget {
                                 const Expanded(child: Text('Impossibile visualizzare il prodotto in questo momento')),
                                 IconButton(
                                   icon: const Icon(Icons.delete),
-                                  onPressed: () => Hive.box(amazonMobile).deleteAt(index),
+                                  onPressed: () => amazonMobileBox.deleteAt(index),
                                 )
                               ]);
                             }
-                            return ProductTile(product: snapshot.data!, box: amazonDesktopBox);
+                            return AmazonProductTile(product: snapshot.data!, box: amazonDesktopBox);
                           }),
                     );
                   })

@@ -1,4 +1,4 @@
-class Product {
+class AmazonProduct {
   String productName;
   String productCostEuros;
   String productCostCents;
@@ -9,7 +9,7 @@ class Product {
   String fastExpedition;
   String expeditionUntil;
 
-  Product(
+  AmazonProduct(
       {required this.imgURL,
       required this.productName,
       required this.productCostEuros,

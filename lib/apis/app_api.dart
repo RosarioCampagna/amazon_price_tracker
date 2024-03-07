@@ -1,19 +1,20 @@
-import 'package:amazon_price_tracker/main.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
-import 'package:amazon_price_tracker/models/product.dart';
+import 'package:amazon_price_tracker/models/amazon_product.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
+
+import '../models/prozis_product.dart';
 
 class AppAPI {
   void addProduct(String text) {
     Hive.box('products').put(text, text);
   }
 
-  Future<Product> getAmazonProduct(String productID, String boxCalled) async {
+  Future<AmazonProduct> getAmazonProduct(String productID, String boxName) async {
     Uri url;
 
     //prendo in input il sito con il prodotto
-    if (boxCalled == 'amazonMobile') {
+    if (boxName == 'amazonMobile') {
       url = Uri.https('amzn.eu', '/d/$productID');
     } else {
       url = Uri.https('amazon.it', '/gp/product/$productID');
@@ -58,6 +59,7 @@ class AppAPI {
       availability = availability.replaceAll('<span class="a-size-medium a-color-success"> ', '');
       availability = availability.replaceAll(' </span>', '');
     }
+
     //cerca l'immagine del prodotto in questione
     String imgURL = soup.find('img', class_: 'a-dynamic-image').toString();
     imgURL = imgURL.substring(imgURL.indexOf('http'), imgURL.indexOf('.jpg') + 4);
@@ -73,9 +75,9 @@ class AppAPI {
     } else {
       //data di spedizione senza prime
       normalExpedition = soup.find('span', class_: 'a-text-bold').toString();
-
       normalExpedition = normalExpedition.substring(normalExpedition.lastIndexOf('"') + 2);
       normalExpedition = normalExpedition.replaceAll('</span>', '');
+
       //data di spedizione con prime
       fastExpedition = soup.find('*', id: 'mir-layout-DELIVERY_BLOCK-slot-SECONDARY_DELIVERY_MESSAGE_LARGE').toString();
       if (fastExpedition != 'null') {
@@ -92,7 +94,7 @@ class AppAPI {
       }
     }
 
-    Product product = Product(
+    AmazonProduct product = AmazonProduct(
         imgURL: imgURL,
         productName: productName.trim(),
         productCostEuros: productCostEuros.trim(),
@@ -106,34 +108,42 @@ class AppAPI {
     return product;
   }
 
-  Future<Product> getProzisProduct(String productID) async {
-    Uri prozisURL = Uri.https('prozis.com', '/it/it/prozis$productID');
+  Future<ProzisProduct> getProzisProduct(String productID) async {
+    Uri prozisURL = Uri.https('prozis.com', '/it/it/prozis/$productID');
 
+    //ottengo la pagina di prozis
     Response prozisPage = await get(prozisURL);
+
     String body = prozisPage.body;
 
+    //creo l'istanza soup della pagina
     BeautifulSoup prozisPageSoup = BeautifulSoup(body);
 
+    //ottengo il nome del prodotto
     String productName = (prozisPageSoup.find('meta', attrs: {'property': 'og:title'})!['content']).toString();
     productName = productName.replaceAll('| Prozis', '');
+
+    //ottengo la descrizione del prodotto
     String description = (prozisPageSoup.find('meta', attrs: {'property': 'og:description'})!['content']).toString();
+
+    //ottengo l'url d'immagine del prodotto
     String imgURL = (prozisPageSoup.find('meta', attrs: {'property': 'og:image'})!['content']).toString();
+
+    //ottengo il prezzo del prodotto
     String productPrice =
         (prozisPageSoup.find('meta', attrs: {'property': 'product:price:amount'})!['content']).toString();
 
+    //ottengo i dettagli di spedizione del prodotto
     String shipping = prozisPageSoup.find('span', class_: 'freeshipping-style').toString();
     shipping = shipping.replaceAll('<span class="freeshipping-style">', '');
     shipping = shipping.replaceAll('</span>', '');
 
-    return Product(
+    return ProzisProduct(
         imgURL: imgURL,
-        productName: productName.trim(),
-        productCostEuros: productPrice.trim(),
-        productCostCents: 'productCostCents',
-        availability: 'availability',
-        productID: productID,
-        normalExpedition: description,
-        fastExpedition: shipping,
-        expeditionUntil: 'expeditionUntil');
+        productName: productName,
+        productDescription: description,
+        productCost: productPrice,
+        productShipping: shipping,
+        productID: productID);
   }
 }

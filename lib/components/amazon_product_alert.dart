@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import '../models/amazon_product.dart';
 
-class ProductAlertWidget extends StatelessWidget {
-  const ProductAlertWidget({
+class AmazonProductAlertWidget extends StatelessWidget {
+  const AmazonProductAlertWidget({
     super.key,
     required this.product,
   });
 
-  final Product product;
+  final AmazonProduct product;
 
   @override
   Widget build(BuildContext context) {
-    print(product.availability);
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.background,
       title: Text(

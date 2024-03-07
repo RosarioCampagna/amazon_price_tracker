@@ -1,13 +1,13 @@
 import 'package:amazon_price_tracker/components/amazon_product_alert.dart';
-import 'package:amazon_price_tracker/models/product.dart';
+import 'package:amazon_price_tracker/models/amazon_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
 
-class ProductTile extends StatelessWidget {
-  const ProductTile({super.key, required this.product, required this.box});
+class AmazonProductTile extends StatelessWidget {
+  const AmazonProductTile({super.key, required this.product, required this.box});
 
-  final Product product;
+  final AmazonProduct product;
   final Box box;
 
   @override
@@ -31,7 +31,7 @@ class ProductTile extends StatelessWidget {
         ]),
         //list tile del prodotto
         child: ListTile(
-            onTap: () => showDialog(context: context, builder: (context) => ProductAlertWidget(product: product)),
+            onTap: () => showDialog(context: context, builder: (context) => AmazonProductAlertWidget(product: product)),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             dense: true,
             visualDensity: const VisualDensity(vertical: 4),
