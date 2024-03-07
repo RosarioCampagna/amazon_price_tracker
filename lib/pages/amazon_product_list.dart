@@ -23,7 +23,7 @@ class AmazonProductList extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: amazonDesktop.length,
+                    itemCount: amazonDesktopBox.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -50,7 +50,7 @@ class AmazonProductList extends StatelessWidget {
             if (amazonMobileBox.isNotEmpty)
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: amazonMobile.length,
+                  itemCount: amazonMobileBox.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
