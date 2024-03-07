@@ -1,4 +1,4 @@
-import 'package:amazon_price_tracker/components/product_alert.dart';
+import 'package:amazon_price_tracker/components/amazon_product_alert.dart';
 import 'package:amazon_price_tracker/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';

@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:amazon_price_tracker/main.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:amazon_price_tracker/models/product.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -10,11 +9,11 @@ class AppAPI {
     Hive.box('products').put(text, text);
   }
 
-  Future<Product> getProduct(productID) async {
+  Future<Product> getAmazonProduct(String productID, String boxCalled) async {
     Uri url;
 
     //prendo in input il sito con il prodotto
-    if (Platform.isAndroid) {
+    if (boxCalled == 'amazonMobile') {
       url = Uri.https('amzn.eu', '/d/$productID');
     } else {
       url = Uri.https('amazon.it', '/gp/product/$productID');
@@ -105,5 +104,36 @@ class AppAPI {
         expeditionUntil: expeditionUntil.trim());
 
     return product;
+  }
+
+  Future<Product> getProzisProduct(String productID) async {
+    Uri prozisURL = Uri.https('prozis.com', '/it/it/prozis$productID');
+
+    Response prozisPage = await get(prozisURL);
+    String body = prozisPage.body;
+
+    BeautifulSoup prozisPageSoup = BeautifulSoup(body);
+
+    String productName = (prozisPageSoup.find('meta', attrs: {'property': 'og:title'})!['content']).toString();
+    productName = productName.replaceAll('| Prozis', '');
+    String description = (prozisPageSoup.find('meta', attrs: {'property': 'og:description'})!['content']).toString();
+    String imgURL = (prozisPageSoup.find('meta', attrs: {'property': 'og:image'})!['content']).toString();
+    String productPrice =
+        (prozisPageSoup.find('meta', attrs: {'property': 'product:price:amount'})!['content']).toString();
+
+    String shipping = prozisPageSoup.find('span', class_: 'freeshipping-style').toString();
+    shipping = shipping.replaceAll('<span class="freeshipping-style">', '');
+    shipping = shipping.replaceAll('</span>', '');
+
+    return Product(
+        imgURL: imgURL,
+        productName: productName.trim(),
+        productCostEuros: productPrice.trim(),
+        productCostCents: 'productCostCents',
+        availability: 'availability',
+        productID: productID,
+        normalExpedition: description,
+        fastExpedition: shipping,
+        expeditionUntil: 'expeditionUntil');
   }
 }

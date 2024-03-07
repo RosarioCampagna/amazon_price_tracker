@@ -1,3 +1,4 @@
+import 'package:amazon_price_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -29,35 +30,70 @@ class AddAlertNorm extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             if (text.isNotEmpty) {
-              String tempText = text;
-              try {
-                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('/'));
-              } on Error {
-                tempText = text.substring(text.indexOf('dp') + 3, text.lastIndexOf('dp') + 13);
-              }
-              if (tempText.length > 10) {
-                tempText = text.substring(text.indexOf('product') + 8, text.indexOf('product') + 18);
-              }
-              if (!Hive.box('products').containsKey(tempText)) {
-                Hive.box('products').put(tempText, tempText);
-                tempText = '';
-                text = '';
-                Navigator.pop(context);
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: const Text('Prodotto già inserito'),
-                        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Okay'))],
-                      );
-                    });
-              }
+              getProductID(text, context);
+              text = '';
+              Navigator.pop(context);
             }
           },
           child: const Text('Aggiungi'),
         ),
       ],
     );
+  }
+}
+
+void getProductID(String value, BuildContext context) {
+  bool productAdded = true;
+
+  //aggiungi prodotto nella box amazon desktop
+  if (value.contains('amazon')) {
+    String tempText = value;
+    try {
+      tempText = value.substring(value.indexOf('dp') + 3, value.lastIndexOf('/'));
+    } on Error {
+      tempText = value.substring(value.indexOf('dp') + 3, value.lastIndexOf('dp') + 13);
+    }
+    if (tempText.length > 10) {
+      tempText = value.substring(value.indexOf('product') + 8, value.indexOf('product') + 18);
+    }
+    if (!Hive.box(amazonDesktop).containsKey(tempText)) {
+      Hive.box(amazonDesktop).put(tempText, tempText);
+      return;
+    } else {
+      productAdded = false;
+    }
+  }
+
+  //aggiungi prodotto nella box amazon mobile
+  if (value.contains('amzn') && productAdded) {
+    String productID = value.substring(value.lastIndexOf('/') + 1);
+    if (!Hive.box(amazonMobile).containsKey(productID)) {
+      Hive.box(amazonMobile).put(productID, productID);
+      return;
+    } else {
+      productAdded = false;
+    }
+  }
+
+  //aggiungi prodotto nella box prozis
+  if (value.contains('prozis') && productAdded) {
+    String productID = value.substring(value.lastIndexOf('/') + 1);
+    if (!Hive.box(prozis).containsKey(productID)) {
+      Hive.box(prozis).put(productID, productID);
+      return;
+    } else {
+      productAdded = false;
+    }
+  }
+
+  if (!productAdded) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: const Text('Prodotto già inserito'),
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Okay'))],
+          );
+        });
   }
 }
